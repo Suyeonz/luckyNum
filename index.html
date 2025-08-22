@@ -2,74 +2,96 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>랜덤 로또 번호 생성기</title>
+  <title>아빠를 위한 로또번호</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 40px;
+      margin: 20px;
       background: #fafafa;
     }
     h1 {
       color: #333;
+      font-size: clamp(20px, 4vw, 28px);
     }
     .line {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 8px auto;
-      background: #f4f4f4;
-      padding: 8px 12px;
-      border-radius: 8px;
-      width: 400px;
+      margin: 12px auto;
+      gap: clamp(4px, 1vw, 8px); /* 화면에 맞춰 간격 줄어듦 */
+      flex-wrap: nowrap; /* 줄바꿈 금지 */
+      overflow-x: auto; /* 화면 좁으면 스크롤 가능 */
+      padding-bottom: 4px;
     }
-    .numbers {
-      flex: 1;
+    .numbers, .bonus {
       display: flex;
       justify-content: center;
-      gap: 6px;
-      font-size: 18px;
+      align-items: center;
+      gap: clamp(4px, 1vw, 6px);
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: #f4f4f4;
+      flex-shrink: 1; /* 화면에 맞춰 줄어듦 */
     }
     .ball {
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      width: 32px;
-      height: 32px;
+      flex-shrink: 1; /* 화면 좁으면 공 크기 줄어듦 */
+      width: clamp(24px, 6vw, 40px);
+      height: clamp(24px, 6vw, 40px);
       border-radius: 50%;
       color: white;
       font-weight: bold;
+      font-size: clamp(12px, 3vw, 18px);
     }
-    .yellow { background-color: gold; }
-    .blue   { background-color: dodgerblue; }
-    .red    { background-color: crimson; }
-    .gray   { background-color: gray; }
-    .green  { background-color: seagreen; }
+    .yellow { background-color: #fbc400; }
+    .blue   { background-color: #69c8f2; }
+    .red    { background-color: #ff7272; }
+    .gray   { background-color: #aaa; }
+    .green  { background-color: #b0d840; }
+
+    .plus {
+      font-weight: bold;
+      font-size: clamp(16px, 4vw, 22px);
+      color: #999;
+      flex-shrink: 0; /* 줄어들지 않음 */
+    }
 
     button {
       padding: 6px 12px;
-      margin-left: 8px;
+      margin-left: 6px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-size: clamp(12px, 3.5vw, 16px);
+      white-space: nowrap;
+      flex-shrink: 0; /* 버튼 크기 유지 */
     }
     .copy-btn {
-      background: #4CAF50;
+      background: #DAB2FF;
       color: white;
     }
     .generate-btn {
       margin-top: 20px;
-      background: #2196F3;
+      background: #007AFF;
       color: white;
-      font-size: 16px;
+      font-size: clamp(14px, 4vw, 18px);
       padding: 10px 20px;
+    }
+
+    /* 모바일 터치용 스크롤 감추기 */
+    .line::-webkit-scrollbar {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>랜덤 로또 번호 5세트</h1>
+  <h1>🍀 아빠에게 보내는 행운 숫자</h1>
   <div id="result"></div>
-  <button class="generate-btn" onclick="generateNumbers()">🔄 다시 생성하기</button>
+  <button class="generate-btn" onclick="generateNumbers()">🔁 다른 추천 번호</button>
 
   <script>
     function getColorClass(num) {
@@ -82,43 +104,56 @@
 
     function generateNumbers() {
       let resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = ""; // 초기화
+      resultDiv.innerHTML = "";
 
       for (let i = 0; i < 5; i++) {
         let numbers = [];
-        while (numbers.length < 6) {
+        while (numbers.length < 7) {
           let n = Math.floor(Math.random() * 45) + 1;
           if (!numbers.includes(n)) numbers.push(n);
         }
         numbers.sort((a,b) => a - b);
 
-        // 줄 생성
+        let mainNumbers = numbers.slice(0,6);
+        let bonusNumber = numbers[6];
+
         let lineDiv = document.createElement("div");
         lineDiv.className = "line";
 
-        // 번호 영역
         let numContainer = document.createElement("div");
         numContainer.className = "numbers";
 
-        numbers.forEach(num => {
+        mainNumbers.forEach(num => {
           let ball = document.createElement("div");
           ball.className = "ball " + getColorClass(num);
           ball.textContent = num;
           numContainer.appendChild(ball);
         });
 
-        // 복사 버튼
+        let plusSpan = document.createElement("span");
+        plusSpan.className = "plus";
+        plusSpan.textContent = "+";
+
+        let bonusContainer = document.createElement("div");
+        bonusContainer.className = "bonus";
+        let bonusBall = document.createElement("div");
+        bonusBall.className = "ball " + getColorClass(bonusNumber);
+        bonusBall.textContent = bonusNumber;
+        bonusContainer.appendChild(bonusBall);
+
         let copyBtn = document.createElement("button");
         copyBtn.className = "copy-btn";
-        copyBtn.textContent = "📋 복사";
+        copyBtn.textContent = "💜 복사";
         copyBtn.onclick = () => {
-          let textToCopy = numbers.join(", ");
+          let textToCopy = mainNumbers.join(", ") + " + " + bonusNumber;
           navigator.clipboard.writeText(textToCopy).then(() => {
             alert("복사 완료: " + textToCopy);
           });
         };
 
         lineDiv.appendChild(numContainer);
+        lineDiv.appendChild(plusSpan);
+        lineDiv.appendChild(bonusContainer);
         lineDiv.appendChild(copyBtn);
         resultDiv.appendChild(lineDiv);
       }
