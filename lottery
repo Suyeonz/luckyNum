@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>랜덤 로또 번호 생성기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 40px;
+      background: #fafafa;
+    }
+    h1 {
+      color: #333;
+    }
+    .line {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px auto;
+      background: #f4f4f4;
+      padding: 8px 12px;
+      border-radius: 8px;
+      width: 320px;
+    }
+    .numbers {
+      flex: 1;
+      font-size: 18px;
+    }
+    button {
+      padding: 6px 12px;
+      margin-left: 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .copy-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    .generate-btn {
+      margin-top: 20px;
+      background: #2196F3;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>랜덤 로또 번호 5세트</h1>
+  <div id="result"></div>
+  <button class="generate-btn" onclick="generateNumbers()">🔄 다시 생성하기</button>
+
+  <script>
+    function generateNumbers() {
+      let resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // 초기화
+
+      for (let i = 0; i < 5; i++) {
+        let numbers = [];
+        while (numbers.length < 6) {
+          let n = Math.floor(Math.random() * 45) + 1;
+          if (!numbers.includes(n)) {
+            numbers.push(n);
+          }
+        }
+        numbers.sort((a, b) => a - b); // 오름차순 정렬
+        let numberString = numbers.join(", ");
+
+        // 줄 생성
+        let lineDiv = document.createElement("div");
+        lineDiv.className = "line";
+
+        // 번호
+        let numSpan = document.createElement("span");
+        numSpan.className = "numbers";
+        numSpan.textContent = numberString;
+
+        // 복사 버튼
+        let copyBtn = document.createElement("button");
+        copyBtn.className = "copy-btn";
+        copyBtn.textContent = "📋 복사";
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(numberString).then(() => {
+            alert("복사 완료: " + numberString);
+          });
+        };
+
+        lineDiv.appendChild(numSpan);
+        lineDiv.appendChild(copyBtn);
+        resultDiv.appendChild(lineDiv);
+      }
+    }
+
+    // 페이지 열리자마자 처음 한 번 실행
+    generateNumbers();
+  </script>
+</body>
+</html>
